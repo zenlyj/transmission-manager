@@ -68,13 +68,13 @@ class FileManager:
         if len(torrents) == 0: return
         completedTorrents = list(filter(lambda torrent : torrent.isDone(), torrents))
         if len(completedTorrents) == 0: return
+        completedHashes = set(self.getHashes(completedTorrents))
+        self.hashes = self.hashes.difference(completedHashes)
+        self.saveHashes()
         completedIds = list(map(lambda torrent : torrent.getId(), completedTorrents))
         completedIds = ','.join(completedIds)
         cmd = f'transmission-remote -n \'{self.creds}\' -t {completedIds} -r'
         subprocess.check_output(cmd, shell=True)
-        completedHashes = set(self.getHashes(completedTorrents))
-        self.hashes = self.hashes.difference(completedHashes)
-        self.saveHashes()
 
     def filterTorrents(self, torrents):
         if len(torrents) == 0: return torrents
